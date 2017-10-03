@@ -96,6 +96,15 @@ Contributors
 
  Orson Teodoro was responsible for making psDooM mod work on Chocolate Doom.
 
+Contributing
+------------
+
+    Fork it ( https://github.com/orsonteodoro/psdoom-ng1/fork )
+    Create your feature branch (git checkout -b my-new-feature)
+    Commit your changes (git commit -am 'Add some feature') or (for multiline commit message: git commit -F- <<EOF \n blah blah blah \n EOF)
+    Push to the branch (git push origin my-new-feature)
+    Create new Pull Request
+
 License
 -------
  psDooM was based on GNU General Public License 2.0.
