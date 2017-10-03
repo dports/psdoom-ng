@@ -56,6 +56,17 @@ EXTRA_DIST=                             \
         TODO.md                         \
         rpm.spec
 
+PSDO0M_DOC_FILES=                       \
+        CHANGELOG.psdoom-ng             \
+        COPYING.psdoom-ng               \
+        CREDITS.psdoom-ng               \
+        README.psdoom-ng                \
+        TODO.psdoom-ng
+
+psdoomngdocsdir = ${docdir}/../psdoom-ng
+psdoomngdocs_DATA = $(DOC_FILES) $(PSDO0M_DOC_FILES)
+
+if ENABLE_ALL_GAMES
 doomdocsdir = ${docdir}/../${PROGRAM_PREFIX}doom
 doomdocs_DATA = $(DOC_FILES) NOT-BUGS.md
 
@@ -67,6 +78,7 @@ hexendocs_DATA = $(DOC_FILES)
 
 strifedocsdir = ${docdir}/../${PROGRAM_PREFIX}strife
 strifedocs_DATA = $(DOC_FILES) README.Strife.md
+endif
 
 MAINTAINERCLEANFILES =  $(AUX_DIST_GEN)
 
@@ -82,3 +94,21 @@ INSTALL : man/INSTALL.template man/simplecpp
 
 endif
 
+psdoomngcfgdir = ${prefix}/share/psdoom-ng
+psdoomngcfg_DATA = psdoom-ng.conf.example
+
+psdoomngwrapperdir = ${prefix}/bin
+psdoomngwrapper_PROGRAMS = psd
+
+psd : psd.in
+	cp psd.in $@
+	chmod +x $@
+
+if ENABLE_CLOUDFOUNDRY
+psdoomngcfdir = ${prefix}/local/bin
+psdoomngcf_PROGRAMS = psdoom-ng-cf-ctl
+
+psdoom-ng-cf-ctl : contrib/psdoom-ng-cf-ctl.in
+	cp contrib/psdoom-ng-cf-ctl.in $@
+	chmod +x $@
+endif

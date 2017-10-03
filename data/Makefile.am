@@ -10,8 +10,11 @@ EXTRA_DIST=              \
         convert-icon
 
 iconsdir = $(prefix)/share/icons
+
+if ENABLE_ALL_GAMES
 icons_DATA = @PROGRAM_PREFIX@doom.png   \
              @PROGRAM_PREFIX@setup.png
+endif
 
 @PROGRAM_PREFIX@doom.png : doom.png
 	cp $(top_srcdir)/data/doom.png $@

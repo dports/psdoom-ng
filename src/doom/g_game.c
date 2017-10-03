@@ -1,5 +1,6 @@
 //
 // Copyright(C) 1993-1996 Id Software, Inc.
+// Copyright (C) 2000 by David Koppenhofer
 // Copyright(C) 2005-2014 Simon Howard
 //
 // This program is free software; you can redistribute it and/or
@@ -132,6 +133,14 @@ boolean         demorecording;
 boolean         longtics;               // cph's doom 1.91 longtics hack
 boolean         lowres_turn;            // low resolution turning for longtics
 boolean         demoplayback; 
+
+// *** PID BEGIN ***
+// Need a variable to hold 'demoplayback' because G_InitNew()
+// wipes it out before pr_check() is called.  Therefore, pid mobjs
+// are spawned on level load for a demo and messes it all up.
+boolean                isreallyademo;
+// *** PID END ***
+
 boolean		netdemo; 
 byte*		demobuffer;
 byte*		demo_p;
@@ -346,6 +355,20 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
          || joybuttons[joybspeed];
  
     forward = side = 0;
+
+    if (devparm) {
+        if (mousebuttons[mousebfire])
+            fprintf(stderr,"\nplayer fired gun at is at x_fp=%d y_fp=%d  x_int=%d y_int=%d\n",players[consoleplayer].mo->x,players[consoleplayer].mo->y, players[consoleplayer].mo->x>>FRACBITS,players[consoleplayer].mo->y>>FRACBITS);
+
+        if (gamekeydown[key_right]) 
+            fprintf(stderr,"\nplayer is at x_fp=%d  y_fp=%d x_int=%d y_int=%d\n",players[consoleplayer].mo->x,players[consoleplayer].mo->y, players[consoleplayer].mo->x>>FRACBITS,players[consoleplayer].mo->y>>FRACBITS);
+        if (gamekeydown[key_left]) 
+            fprintf(stderr,"\nplayer is at x_fp=%d  y_fp=%d x_int=%d y_int=%d\n",players[consoleplayer].mo->x,players[consoleplayer].mo->y, players[consoleplayer].mo->x>>FRACBITS,players[consoleplayer].mo->y>>FRACBITS);
+        if (gamekeydown[key_up]) 
+            fprintf(stderr,"\nplayer is at x_fp=%d  y_fp=%d x_int=%d y_int=%d\n",players[consoleplayer].mo->x,players[consoleplayer].mo->y, players[consoleplayer].mo->x>>FRACBITS,players[consoleplayer].mo->y>>FRACBITS);
+        if (gamekeydown[key_down]) 
+            fprintf(stderr,"\nplayer is at x_fp=%d  y_fp=%d x_int=%d y_int=%d\n",players[consoleplayer].mo->x,players[consoleplayer].mo->y, players[consoleplayer].mo->x>>FRACBITS,players[consoleplayer].mo->y>>FRACBITS);
+    }
     
     // use two stage accelerative turning
     // on the keyboard and joystick
@@ -652,7 +675,23 @@ void G_DoLoadLevel (void)
 	memset (players[i].frags,0,sizeof(players[i].frags)); 
     } 
 		 
-    P_SetupLevel (gameepisode, gamemap, 0, gameskill);    
+// *** PID BEGIN ***
+// Here's where we need to temporarily set demoplayback.
+// pr_check() is called from P_SetupLevel().
+    if ( isreallyademo ){
+       demoplayback = true;
+    }
+// *** PID END ***
+		 
+    P_SetupLevel (gameepisode, gamemap, 0, gameskill); 
+
+// *** PID BEGIN ***
+// Here's where we set demoplayback back if changed above.
+    if ( isreallyademo ){
+       demoplayback = false;
+    }
+// *** PID END ***
+       
     displayplayer = consoleplayer;		// view the guy you are playing    
     gameaction = ga_nothing; 
     Z_CheckHeap ();
@@ -1707,13 +1746,27 @@ G_DeferedInitNew
 void G_DoNewGame (void) 
 {
     demoplayback = false; 
+
+// *** PID BEGIN ***
+// This is a new game, not a demo, so set the holding flag to false.
+    isreallyademo = false;
+// *** PID END ***
+
+    
     netdemo = false;
     netgame = false;
     deathmatch = false;
     playeringame[1] = playeringame[2] = playeringame[3] = 0;
     respawnparm = false;
     fastparm = false;
-    nomonsters = false;
+
+// *** PID BEGIN ***
+// Make '-nomonsters.' persistant across new games/warps.
+    nomonsters = nomonstersperiod;
+// old code:
+//    nomonsters = false;
+// *** PID END ***
+
     consoleplayer = 0;
     G_InitNew (d_skill, d_episode, d_map); 
     gameaction = ga_nothing; 
@@ -2202,6 +2255,12 @@ void G_DoPlayDemo (void)
 	netdemo = true;
     }
 
+// *** PID BEGIN ***
+// Before we init the level, set the flag to hold the fact
+// that this is a demo.
+    isreallyademo = true;
+// *** PID END ***
+
     // don't spend a lot of time in loadlevel 
     precache = false;
     G_InitNew (skill, episode, map); 
@@ -2275,7 +2334,12 @@ boolean G_CheckDemoStatus (void)
 	playeringame[1] = playeringame[2] = playeringame[3] = 0;
 	respawnparm = false;
 	fastparm = false;
-	nomonsters = false;
+// *** PID BEGIN ***
+// Make '-nomonsters.' persistant across new games/warps.
+        nomonsters = nomonstersperiod;
+// old code:
+//        nomonsters = false;
+// *** PID END ***
 	consoleplayer = 0;
         
         if (singledemo) 

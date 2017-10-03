@@ -1,5 +1,6 @@
 //
 // Copyright(C) 1993-1996 Id Software, Inc.
+// Copyright(C) 2000 by David Koppenhofer
 // Copyright(C) 2005-2014 Simon Howard
 //
 // This program is free software; you can redistribute it and/or
@@ -33,9 +34,19 @@
 
 #include "doomstat.h"
 
-
+// *** PID BEGIN ***
+#include <string.h>
+// *** PID END ***
 void G_PlayerReborn (int player);
-void P_SpawnMapThing (mapthing_t*	mthing);
+
+// *** PID BEGIN ***
+// Have this routine return a pointer to the pid mobj it creates.
+// Return NULL if nothing is created.
+// Also accept a parameter to tell if it is spawning a pid mobj.
+mobj_t *P_SpawnMapThing (mapthing_t*	mthing, boolean is_pid_mobj);
+// old code:
+// void P_SpawnMapThing (mapthing_t*	mthing);
+// *** PID END ***
 
 
 //
@@ -628,6 +639,24 @@ void P_RespawnSpecials (void)
     // only respawn items in deathmatch
     if (deathmatch != 2)
 	return;	// 
+// *** PID BEGIN ***
+    // Don't respawn items if not in altdeath AND
+    // if -respawnitems wasn't given.
+    // Also don't respawn because of -respawnitems if we're in
+    // demo recording or playback; it messes up the timing.
+    if (deathmatch != 2 && ( !respawnitems ||
+                             demorecording ||
+                             demoplayback ||
+                             (gamestate == GS_DEMOSCREEN)
+                           )
+       )
+	return;
+
+// old code:
+//    // only respawn items in deathmatch
+//    if (deathmatch != 2)
+//	return;
+// *** PID END ***
 
     // nothing left to respawn?
     if (iquehead == iquetail)
@@ -748,7 +777,14 @@ void P_SpawnPlayer (mapthing_t* mthing)
 // The fields of the mapthing should
 // already be in host byte order.
 //
-void P_SpawnMapThing (mapthing_t* mthing)
+// *** PID BEGIN ***
+// Have this routine return a pointer to the pid mobj it creates.
+// Return NULL if nothing is created.
+// Also accept a parameter to tell if it is spawning a pid mobj.
+mobj_t* P_SpawnMapThing (mapthing_t* mthing, boolean is_pid_mobj)
+// old code:
+//void P_SpawnMapThing (mapthing_t* mthing)
+// *** PID END ***
 {
     int			i;
     int			bit;
@@ -756,7 +792,7 @@ void P_SpawnMapThing (mapthing_t* mthing)
     fixed_t		x;
     fixed_t		y;
     fixed_t		z;
-		
+
     // count deathmatch start positions
     if (mthing->type == 11)
     {
@@ -765,7 +801,13 @@ void P_SpawnMapThing (mapthing_t* mthing)
 	    memcpy (deathmatch_p, mthing, sizeof(*mthing));
 	    deathmatch_p++;
 	}
-	return;
+
+// *** PID BEGIN ***
+// Return NULL here.
+	return NULL;
+// old code:
+//	return;
+// *** PID END ***
     }
 
     if (mthing->type <= 0)
@@ -773,7 +815,12 @@ void P_SpawnMapThing (mapthing_t* mthing)
         // Thing type 0 is actually "player -1 start".  
         // For some reason, Vanilla Doom accepts/ignores this.
 
-        return;
+// *** PID BEGIN ***
+// Return NULL here.
+	return NULL;
+// old code:
+//	return;
+// *** PID END ***
     }
 	
     // check for players specially
@@ -784,12 +831,22 @@ void P_SpawnMapThing (mapthing_t* mthing)
 	if (!deathmatch)
 	    P_SpawnPlayer (mthing);
 
-	return;
+// *** PID BEGIN ***
+// Return NULL here.
+	return NULL;
+// old code:
+//	return;
+// *** PID END ***
     }
 
     // check for apropriate skill level
     if (!netgame && (mthing->options & 16) )
-	return;
+// *** PID BEGIN ***
+// Return NULL here.
+	return NULL;
+// old code:
+//	return;
+// *** PID END ***
 		
     if (gameskill == sk_baby)
 	bit = 1;
@@ -798,8 +855,14 @@ void P_SpawnMapThing (mapthing_t* mthing)
     else
 	bit = 1<<(gameskill-1);
 
-    if (!(mthing->options & bit) )
-	return;
+// *** PID BEGIN ***
+//bug: Code here does not spawn monsters for psdoom
+//    if (!(mthing->options & bit) )
+// Return NULL here.
+//	return NULL;
+// old code:
+//	return;
+// *** PID END ***
 	
     // find which type to spawn
     for (i=0 ; i< NUMMOBJTYPES ; i++)
@@ -813,15 +876,30 @@ void P_SpawnMapThing (mapthing_t* mthing)
 		
     // don't spawn keycards and players in deathmatch
     if (deathmatch && mobjinfo[i].flags & MF_NOTDMATCH)
-	return;
+// *** PID BEGIN ***
+// Return NULL here.
+       return NULL;
+// old code:
+//     return;
 		
     // don't spawn any monsters if -nomonsters
     if (nomonsters
 	&& ( i == MT_SKULL
 	     || (mobjinfo[i].flags & MF_COUNTKILL)) )
     {
-	return;
+          // Return NULL here.
+          return NULL;
     }
+    
+// old code:
+    // don't spawn any monsters if -nomonsters
+    //if (nomonsters
+	//&& ( i == MT_SKULL
+	//     || (mobjinfo[i].flags & MF_COUNTKILL)) )
+    //{
+	//return;
+    //}    
+// *** PID END ***
     
     // spawn it
     x = mthing->x << FRACBITS;
@@ -845,6 +923,10 @@ void P_SpawnMapThing (mapthing_t* mthing)
     mobj->angle = ANG45 * (mthing->angle/45);
     if (mthing->options & MTF_AMBUSH)
 	mobj->flags |= MF_AMBUSH;
+
+// *** PID BEGIN ***
+   return mobj;
+// *** PID END ***
 }
 
 

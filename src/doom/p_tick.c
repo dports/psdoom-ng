@@ -1,5 +1,7 @@
 //
 // Copyright(C) 1993-1996 Id Software, Inc.
+// Copyright(C) 1999 by Dennis Chao
+// Copyright(C) 2000 by David Koppenhofer
 // Copyright(C) 2005-2014 Simon Howard
 //
 // This program is free software; you can redistribute it and/or
@@ -23,6 +25,9 @@
 
 #include "doomstat.h"
 
+// *** PID BEGIN ***
+#include "pr_process.h"
+// *** PID END ***
 
 int	leveltime;
 
@@ -147,6 +152,18 @@ void P_Ticker (void)
     P_RunThinkers ();
     P_UpdateSpecials ();
     P_RespawnSpecials ();
+
+// *** PID BEGIN ***
+    if ( (leveltime != 0) && ( (leveltime & 255) == 0) ){
+      // Print status message.
+      fprintf(stderr, "***** game ticker: *****\n");
+
+      // Check for new processes / validate old ones.
+      // Mark them all for deletion unless they validate next time.
+      pr_check();
+      cleanup_pid_list(NULL);
+    } 
+// *** PID END ***
 
     // for par times
     leveltime++;	

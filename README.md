@@ -1,104 +1,105 @@
-# Chocolate Doom
+psdoom-ng
+=========
 
-Chocolate Doom aims to accurately reproduce the original DOS version of
-Doom and other games based on the Doom engine in a form that can be
-run on modern computers.
+psdoom-ng is a First Person Shooter operating system process killer based on psDooM and Chocolate Doom.
 
-Originally, Chocolate Doom was only a Doom source port. The project
-now includes ports of Heretic and Hexen, and Strife.
 
-Chocolate Doom’s aims are:
+Compile and usage
+-----------------
 
- * To always be 100% Free and Open Source software.
- * Portability to as many different operating systems as possible.
- * Accurate reproduction of the original DOS versions of the games,
-   including bugs.
- * Compatibility with the DOS demo, configuration and savegame files.
- * To provide an accurate retro “feel” (display and input should
-   behave the same).
+Quick guide: 
 
-More information about the philosophy and design behind Chocolate Doom
-can be found in the PHILOSOPHY file distributed with the source code.
+ 1. Install all dependencies: gcc, make, libsdl, sdl_mixer, sdl_net, bash.
+ 2. `cd trunk`
+ 3. `./configure --help` #review your prefix, other paths, and extra options
+ 4. `make`
+ 5. `make install`
+ 6. `man psdoom-ng` #read up on how to set it up the wrapper script psd
+ 4. Get a copy of Doom, to copy the file Doom2.wad.
+ 3. Action! `psd` or `psdoom-ng`
 
-## Setting up gameplay
+Find more information in:
+ * [man psdoom-ng](https://github.com/orsonteodoro/psdoom-ng/blob/master/extras/psdoom-ng.pdf)
+ * [trunk/INSTALL](https://github.com/orsonteodoro/psdoom-ng/blob/1.6.0/trunk/INSTALL)
+ * [trunk/CMDLINE](https://github.com/orsonteodoro/psdoom-ng/blob/1.6.0/trunk/CMDLINE)
+ * [trunk/README.psdoom-ng](https://github.com/orsonteodoro/psdoom-ng/blob/master/trunk/README.psdoom-ng) 
 
-For instructions on how to set up Chocolate Doom for play, see the
-INSTALL file.
+Gentoo Linux
+------------
+You can find the ebuild at https://github.com/orsonteodoro/oiledmachine-overlay
 
-## Configuration File
+Mac OS X
+---------
 
-Chocolate Doom is compatible with the DOS Doom configuration file
-(normally named `default.cfg`). Existing configuration files for DOS
-Doom should therefore simply work out of the box. However, Chocolate
-Doom also provides some extra settings. These are stored in a
-separate file named `chocolate-doom.cfg`.
+Now with support for Mac OS X!
 
-The configuration can be edited using the chocolate-setup tool.
+It is recommended use brew to install the depenedencies.
 
-## Command line options
 
-Chocolate Doom supports a number of command line parameters, including
-some extras that were not originally suported by the DOS versions. For
-binary distributions, see the CMDLINE file included with your
-download; more information is also available on the Chocolate Doom
-website.
+Support for external process source
+-----------------------------------
 
-## Playing TCs
+You can use external commands as interface to retrieve, renice and kill process.
 
-With Vanilla Doom there is no way to include sprites in PWAD files.
-Chocolate Doom’s ‘-file’ command line option behaves exactly the same
-as Vanilla Doom, and trying to play TCs by adding the WAD files using
-‘-file’ will not work.
+This makes it easy to adapt the tool to your needs, or even integrate it with external
+services (AWS, heroku, vmware, etc).
 
-Many Total Conversions (TCs) are distributed as a PWAD file which must
-be merged into the main IWAD. Typically a copy of DEUSF.EXE is
-included which performs this merge. Chocolate Doom includes a new
-option, ‘-merge’, which will simulate this merge. Essentially, the
-WAD directory is merged in memory, removing the need to modify the
-IWAD on disk.
+For that, you only need to override these environment variables:
 
-To play TCs using Chocolate Doom, run like this:
-
-```
-chocolate-doom -merge thetc.wad
+ * PSDOOMPSCMD List the processes. The command must print one space separated 
+   line per process with the format: `<user> <pid> <processname> <is_daemon=[1|0]>`
+```bash
+    keymon 29 web4 1
+    keymon 30 web3 1
+    keymon 31 adis3 1
+    keymon 32 core15 1
+    keymon 20 core2 1
 ```
 
-Here are some examples:
+ * PSDOOMRENICECMD Command to renice the process. Will get the pid as argument
 
+ * PSDOOMKILLCMD Command to kill the process. Will get the pid as argument
+
+
+For example, in contrib you can find a script that interacts with cloudfoundry:
+
+```bash
+    cd trunk
+    PSDOOMPSCMD="./contrib/psdoom-cf-ctl ps" \
+    PSDOOMRENICECMD="true" \
+    PSDOOMKILLCMD="./contrib/psdoom-cf-ctl kill" \
+    ./src/psdoom
 ```
-chocolate-doom -merge batman.wad -deh batman.deh vbatman.deh  (Batman Doom)
-chocolate-doom -merge aoddoom1.wad -deh aoddoom1.deh  (Army of Darkness Doom)
-```
 
-## Other information
 
- * Chocolate Doom includes a number of different options for music
-   playback. See the README.Music file for more details.
+NOTE: psdoom does a synchronous call to the external commands (mono-thread). If your
+command takes too long, you will feel hipcuts in the game. Try to make your commands
+respond really fast! 
 
- * More information, including information about how to play various
-   classic TCs, is available on the Chocolate Doom website:
+The example script can be installed by adding --enable-cloudfoundry on configure and is installed in /usr/local/portage/psdoom-ng-cf-ctl
 
-     https://www.chocolate-doom.org/
+Custom map
+----------
+The custom wads referred in psDooM readme can be found at extras/psdoom-2000.05.03-data.tar.gz
 
-   You are encouraged to sign up and contribute any useful information
-   you may have regarding the port!
+Contributors
+------------
+ Dennis Chao came up with the original idea and wrote much of the mod.
 
- * Chocolate Doom is not perfect. Although it aims to accurately
-   emulate and reproduce the DOS executables, some behavior can be very
-   difficult to reproduce. Because of the nature of the project, you
-   may also encounter Vanilla Doom bugs; these are intentionally
-   present; see the NOT-BUGS file for more information.
+ David Koppenhofer was the previous maintainer of the mod psDooM.
 
-   New bug reports can be submitted to the issue tracker on Github:
+ Simon Howard wrote Chocolate Doom which is the current game engine used.
 
-     https://github.com/chocolate-doom/chocolate-doom/issues
+ Hector Rivas Gandara added support for external sources and cloud services.
 
- * Source code patches are welcome, but please follow the style
-   guidelines - see the file named HACKING included with the source
-   distribution.
+ Jesse Speilman added support for Mac OS X.
 
- * Chocolate Doom is distributed under the GNU GPL. See the COPYING
-   file for more information.
+ Orson Teodoro was responsible for making psDooM mod work on Chocolate Doom.
 
- * Please send any feedback, questions or suggestions to
-   chocolate-doom-dev-list@chocolate-doom.org. Thanks!
+License
+-------
+ psDooM was based on GNU General Public License 2.0.
+
+ Chocolate Doom was based on GNU General Public License 2.0.
+
+ You can view more about the GPL-2 at http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html

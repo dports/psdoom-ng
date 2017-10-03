@@ -1,5 +1,6 @@
 //
 // Copyright(C) 1993-1996 Id Software, Inc.
+// Copyright(C) 2000 by David Koppenhofer
 // Copyright(C) 2005-2014 Simon Howard
 //
 // This program is free software; you can redistribute it and/or
@@ -44,6 +45,17 @@
 // Command line parameters.
 //
 extern  boolean	nomonsters;	// checkparm of -nomonsters
+
+// *** PID BEGIN ***
+// This makes a 'no monsters' that is persistant across save games
+// and level warps.
+extern  boolean	nomonstersperiod; // checkparm of '-nomonsters.'
+
+// This makes items respawn as in -altdeath (ie. no dropped items,
+// no invis, no invun)
+extern  boolean	respawnitems;  // checkparm of -respawnitems
+// *** PID END ***
+
 extern  boolean	respawnparm;	// checkparm of -respawn
 extern  boolean	fastparm;	// checkparm of -fast
 

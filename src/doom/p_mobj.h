@@ -1,5 +1,7 @@
 //
 // Copyright(C) 1993-1996 Id Software, Inc.
+// Copyright (C) 1999 by Dennis Chao
+// Copyright (C) 2000 by David Koppenhofer
 // Copyright(C) 2005-2014 Simon Howard
 //
 // This program is free software; you can redistribute it and/or
@@ -276,7 +278,23 @@ typedef struct mobj_s
 
     // Thing being chased/attacked for tracers.
     struct mobj_s*	tracer;	
-    
+
+// *** PID BEGIN ***
+    // the process id (0 if not a process)
+    int                 m_pid;
+    char                m_pname[8];
+
+    // Need more variables for advanced process management:
+
+    // Pointers for a linked list of pid mobj's.
+    struct mobj_s	*npid;
+    struct mobj_s	*ppid;
+    // A flag to tell whether to draw the pid info and another to
+    // denote pending deletion from the pid mobj list.
+    boolean		m_draw_pid_info;
+    boolean		m_del_from_pid_list;
+// *** PID END ***
+
 } mobj_t;
 
 

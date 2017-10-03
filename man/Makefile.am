@@ -10,6 +10,7 @@ MANPAGE_GEN_FILES = environ.man           \
                     default.cfg.template  \
                     extra.cfg.template
 
+psdoomngdocsdir = ${docdir}/../psdoom-ng
 doomdocsdir = ${docdir}/../${PROGRAM_PREFIX}doom
 hereticdocsdir = ${docdir}/../${PROGRAM_PREFIX}heretic
 hexendocsdir = ${docdir}/../${PROGRAM_PREFIX}hexen
@@ -37,11 +38,18 @@ SETUP_MAN_PAGES =                          \
            @PROGRAM_PREFIX@hexen-setup.6   \
            @PROGRAM_PREFIX@strife-setup.6
 
+if ENABLE_ALL_GAMES
 man_MANS = chocolate-server.6             \
            chocolate-setup.6              \
            $(GENERATED_MAN_PAGES)         \
-           $(SETUP_MAN_PAGES)
+           $(SETUP_MAN_PAGES) \
+           psdoom-ng.1
+else
+man_MANS = psdoom-ng.1
+endif
 
+psdoomngdocs_DATA = INSTALL.psdoom-ng CMDLINE.psdoom-ng
+if ENABLE_ALL_GAMES
 doomdocs_DATA    = INSTALL.doom    CMDLINE.doom
 hereticdocs_DATA = INSTALL.heretic CMDLINE.heretic
 hexendocs_DATA   = INSTALL.hexen   CMDLINE.hexen
@@ -49,7 +57,12 @@ strifedocs_DATA  = INSTALL.strife  CMDLINE.strife
 
 CLEANFILES = $(GENERATED_MAN_PAGES) $(SETUP_MAN_PAGES) \
              $(doomdocs_DATA) $(hereticdocs_DATA) \
-             $(hexendocs_DATA) $(strifedocs_DATA)
+             $(hexendocs_DATA) $(strifedocs_DATA) \
+             $(psdoomdocsdir_DATA)
+else
+CLEANFILES = $(GENERATED_MAN_PAGES) $(SETUP_MAN_PAGES) \
+             $(psdoomdocsdir_DATA)
+endif
 MANDIR = $(top_srcdir)/man
 DOCGEN = $(MANDIR)/docgen
 
@@ -66,6 +79,12 @@ default.cfg.5: $(top_srcdir)/src $(MANDIR)/default.cfg.template
 @PROGRAM_PREFIX@doom.cfg.5: ../src extra.cfg.template
 	$(DOCGEN) -g doom -m extra.cfg.template \
                  -c extended $(top_srcdir)/src/m_config.c > $@
+
+CMDLINE.psdoom-ng : $(MANDIR)/CMDLINE.template $(top_srcdir)/src $(top_srcdir)/src/doom
+	$(DOCGEN) -p $(MANDIR)/CMDLINE.template $(top_srcdir)/src/ $(top_srcdir)/src/doom/ > $@
+
+INSTALL.psdoom-ng: $(MANDIR)/INSTALL.template
+	$(MANDIR)/simplecpp -DDOOM -DPRECOMPILED < $(MANDIR)/INSTALL.template > $@
 
 CMDLINE.doom : $(MANDIR)/CMDLINE.template $(top_srcdir)/src $(top_srcdir)/src/doom
 	$(DOCGEN) -p $(MANDIR)/CMDLINE.template $(top_srcdir)/src/ $(top_srcdir)/src/doom/ > $@

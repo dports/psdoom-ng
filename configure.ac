@@ -1,13 +1,14 @@
-AC_INIT(Chocolate Doom, 2.3.0, chocolate-doom-dev-list@chocolate-doom.org,
-        chocolate-doom)
+AC_INIT(psdoom-ng, 2017.10.02.2.3.0.20170825, [mod: orsonteodoro@yahoo.com, engine: fraggle@gmail.com],
+        psdoom-ng)
 
-PACKAGE_SHORTNAME=${PACKAGE_NAME% Doom}
-PACKAGE_SHORTDESC="Conservative source port"
+#PACKAGE_SHORTNAME=${PACKAGE_NAME% Doom}
+PACKAGE_SHORTNAME=${PACKAGE_NAME}
+PACKAGE_SHORTDESC="psdoom-ng is a process killer mod based on Chocolate Doom and psDooM"
 PACKAGE_COPYRIGHT="Copyright (C) 1993-2017"
 PACKAGE_LICENSE="GNU General Public License, version 2"
-PACKAGE_MAINTAINER="Simon Howard"
-PACKAGE_URL="https://www.chocolate-doom.org/"
-PACKAGE_ISSUES="https://github.com/chocolate-doom/chocolate-doom/issues"
+PACKAGE_MAINTAINER="mod: Orson Teodoro, engine: Simon Howard"
+PACKAGE_URL="mod: https://github.com/orsonteodoro/psdoom-ng, engine: https://www.chocolate-doom.org/"
+PACKAGE_ISSUES="mod: https://github.com/orsonteodoro/psdoom-ng, engine: https://github.com/chocolate-doom/chocolate-doom/issues"
 
 AC_CONFIG_AUX_DIR(autotools)
 AC_CANONICAL_HOST
@@ -133,6 +134,27 @@ AC_CHECK_TOOL(STRIP, strip, )
 
 AM_CONDITIONAL(HAVE_WINDRES, test "$WINDRES" != "")
 AM_CONDITIONAL(HAVE_PYTHON, $HAVE_PYTHON)
+AC_ARG_ENABLE([cloudfoundry],
+  AS_HELP_STRING([--enable-cloudfoundry], [Install the Cloud Foundry pid finder and app deleter script]),
+  [case "${enableval}" in
+    yes) enable_cloudfoundry=yes ;;
+    no)  enable_cloudfoundry=no ;;
+    *) AC_MSG_ERROR([bad value ${enableval} for --enable-cloudfactory]) ;;
+  esac],
+  [enable_cloudfoundry="no"]
+)
+AM_CONDITIONAL(ENABLE_CLOUDFOUNDRY, test "x$enable_cloudfoundry" = "xyes")
+
+AC_ARG_ENABLE([all-games],
+  AS_HELP_STRING([--enable-all-games], [Builds all the games]),
+  [case "${enableval}" in
+    yes) enable_all_games=yes ;;
+    no)  enable_all_games=no ;;
+    *) AC_MSG_ERROR([bad value ${enableval} for --enable-all-games]) ;;
+  esac],
+  [enable_all_games="no"]
+)
+AM_CONDITIONAL(ENABLE_ALL_GAMES, test "x$enable_all_games" = "xyes")
 
 dnl Automake v1.8.0 is required, please upgrade!
 
@@ -194,6 +216,7 @@ pkg/osx/Info.plist
 rpm.spec
 data/Makefile
 src/Makefile
+src/psdoom-ng.appdata.xml
 src/doom.appdata.xml
 src/doom.desktop
 src/doom-screensaver.desktop

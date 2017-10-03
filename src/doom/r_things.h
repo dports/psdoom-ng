@@ -1,5 +1,6 @@
 //
 // Copyright(C) 1993-1996 Id Software, Inc.
+// Copyright(C) 2000 by David Koppenhofer
 // Copyright(C) 2005-2014 Simon Howard
 //
 // This program is free software; you can redistribute it and/or
@@ -43,8 +44,16 @@ extern fixed_t		pspritescale;
 extern fixed_t		pspriteiscale;
 
 
-void R_DrawMaskedColumn (column_t* column);
-
+// *** PID BEGIN ***
+// Have this function return a value denoting whether
+// it drew any columns for a sprite.
+// Return values are:
+//  0 if nothing was drawn
+//  1 if something was drawn
+boolean R_DrawMaskedColumn (column_t *column);
+// old code:
+// void R_DrawMaskedColumn (column_t* column);
+// *** PID END ***
 
 void R_SortVisSprites (void);
 

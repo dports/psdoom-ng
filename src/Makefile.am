@@ -1,13 +1,20 @@
 
+if ENABLE_ALL_GAMES
 SUBDIRS = doom heretic hexen strife setup
+else
+SUBDIRS = doom setup
+endif
 
-execgamesdir = ${bindir}
+#execgamesdir = ${bindir}
+execgamesdir = ${exec_prefix}/bin
 
+if ENABLE_ALL_GAMES
 execgames_PROGRAMS = @PROGRAM_PREFIX@doom     \
                      @PROGRAM_PREFIX@heretic  \
                      @PROGRAM_PREFIX@hexen    \
                      @PROGRAM_PREFIX@strife   \
-                     @PROGRAM_PREFIX@server
+                     @PROGRAM_PREFIX@server   \
+                     psdoom-ng
 
 noinst_PROGRAMS = @PROGRAM_PREFIX@setup
 
@@ -15,6 +22,12 @@ SETUP_BINARIES = @PROGRAM_PREFIX@doom-setup$(EXEEXT)    \
                  @PROGRAM_PREFIX@heretic-setup$(EXEEXT) \
                  @PROGRAM_PREFIX@hexen-setup$(EXEEXT)   \
                  @PROGRAM_PREFIX@strife-setup$(EXEEXT)
+else
+execgames_PROGRAMS = psdoom-ng
+
+noinst_PROGRAMS = @PROGRAM_PREFIX@doom \
+                  @PROGRAM_PREFIX@setup
+endif
 
 execgames_SCRIPTS = $(SETUP_BINARIES)
 
@@ -219,11 +232,22 @@ EXTRA_DIST =                        \
         manifest.xml
 
 appdatadir = $(prefix)/share/appdata
+if ENABLE_ALL_GAMES
 appdata_DATA =                              \
         @PROGRAM_PREFIX@doom.appdata.xml    \
         @PROGRAM_PREFIX@heretic.appdata.xml \
         @PROGRAM_PREFIX@hexen.appdata.xml   \
+        @PROGRAM_PREFIX@strife.appdata.xml  \
+        psdoom-ng.appdata.xml
+else
+appdata_DATA =                              \
+        psdoom-ng.appdata.xml
+noinst_DATA = \
+        @PROGRAM_PREFIX@doom.appdata.xml    \
+        @PROGRAM_PREFIX@heretic.appdata.xml \
+        @PROGRAM_PREFIX@hexen.appdata.xml   \
         @PROGRAM_PREFIX@strife.appdata.xml
+endif
 
 @PROGRAM_PREFIX@doom.appdata.xml : doom.appdata.xml
 	cp doom.appdata.xml $@
@@ -238,11 +262,22 @@ appdata_DATA =                              \
 	cp strife.appdata.xml $@
 
 appdir = $(prefix)/share/applications
+if ENABLE_ALL_GAMES
 app_DATA =                                 \
            @PROGRAM_PREFIX@doom.desktop    \
            @PROGRAM_PREFIX@heretic.desktop \
            @PROGRAM_PREFIX@hexen.desktop   \
+           @PROGRAM_PREFIX@strife.desktop  \
+           psdoom-ng.desktop
+else
+app_DATA =                                 \
+           psdoom-ng.desktop
+noinst_DATA =                              \
+           @PROGRAM_PREFIX@doom.desktop    \
+           @PROGRAM_PREFIX@heretic.desktop \
+           @PROGRAM_PREFIX@hexen.desktop   \
            @PROGRAM_PREFIX@strife.desktop
+endif
 
 @PROGRAM_PREFIX@doom.desktop : doom.desktop
 	cp doom.desktop $@
@@ -256,8 +291,10 @@ app_DATA =                                 \
 @PROGRAM_PREFIX@strife.desktop : strife.desktop
 	cp strife.desktop $@
 
+if ENABLE_ALL_GAMES
 screensaverdir = $(prefix)/share/applications/screensavers
 screensaver_DATA = @PROGRAM_PREFIX@doom-screensaver.desktop
+endif
 
 @PROGRAM_PREFIX@doom-screensaver.desktop: doom-screensaver.desktop
 	cp doom-screensaver.desktop $@
@@ -284,3 +321,5 @@ mus2mid : $(MUS2MID_SRC_FILES)
 	$(CC) -DSTANDALONE -I$(top_builddir) $(CFLAGS) @LDFLAGS@ \
               $(MUS2MID_SRC_FILES) -o $@
 
+psdoom-ng : @PROGRAM_PREFIX@doom
+	cp @PROGRAM_PREFIX@doom $@

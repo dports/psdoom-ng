@@ -1,5 +1,7 @@
 //
 // Copyright(C) 1993-1996 Id Software, Inc.
+// Copyright(C) 1999 by Dennis Chao
+// Copyright(C) 2000 by David Koppenhofer
 // Copyright(C) 2005-2014 Simon Howard
 //
 // This program is free software; you can redistribute it and/or
@@ -368,6 +370,16 @@ typedef struct vissprite_s
     lighttable_t*	colormap;
    
     int			mobjflags;
+
+// *** PID BEGIN ***
+    // the process id (0 if not a process)
+    int                 m_pid;
+    char                m_pname[8];
+
+    // Need another variable for advanced process management:
+    // A flag to tell whether to draw the pid info.
+    boolean             m_draw_pid_info;
+// *** PID END ***
     
 } vissprite_t;
 
