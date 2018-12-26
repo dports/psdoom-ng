@@ -268,10 +268,10 @@ app_DATA =                                 \
            @PROGRAM_PREFIX@heretic.desktop \
            @PROGRAM_PREFIX@hexen.desktop   \
            @PROGRAM_PREFIX@strife.desktop  \
-           psdoom-ng.desktop
+           #psdoom-ng.desktop
 else
 app_DATA =                                 \
-           psdoom-ng.desktop
+           #psdoom-ng.desktop
 noinst_DATA =                              \
            @PROGRAM_PREFIX@doom.desktop    \
            @PROGRAM_PREFIX@heretic.desktop \

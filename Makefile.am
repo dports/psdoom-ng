@@ -57,7 +57,7 @@ EXTRA_DIST=                             \
         rpm.spec
 
 PSDO0M_DOC_FILES=                       \
-        CHANGELOG.psdoom-ng             \
+        ChangeLog.psdoom-ng             \
         COPYING.psdoom-ng               \
         CREDITS.psdoom-ng               \
         README.psdoom-ng                \
