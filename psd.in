@@ -23,7 +23,7 @@ if [[ ! -f /home/${USER}/.psdoom-ng/ps.sh ]]; then
 #!/bin/bash
 ### get all processes but ...
 ### exclude kernel processes "[foobar]" and psd(oom) processes
-ps aux|awk '{print $1,$2,$11,"0"}'|grep -E -v '^USER|\[|psd|psdoom'
+ps aux|awk '{print $1,$2,$11,"0"}'|grep -E -v '^USER|\[|psd|doom'
 EOF
     chmod +x /home/${USER}/.psdoom-ng/ps.sh
 fi
