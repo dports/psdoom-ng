@@ -1,25 +1,55 @@
-name: C/C++ CI
+name: Github CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - "main"
+    paths-ignore:
+      - "**.md"
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - "main"
+  workflow_dispatch:
 
 jobs:
   build:
+    runs-on: ${{ matrix.os }}
 
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler: [clang, gcc]
+        os: [ubuntu-latest]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v3.1.0
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install libpng-dev libsamplerate0-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-net-dev ninja-build
+
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: CMake
+        env:
+          CC: ${{ matrix.compiler }}
+        run: cmake -S . -B build -G Ninja && ninja -C build
+
+      - name: Make
+        env:
+          CC: ${{ matrix.compiler }}
+        run: $GITHUB_WORKSPACE/.travis.sh
+
+  cppcheck:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install cppcheck
+
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Run cppcheck
+        env:
+          ANALYZE: true
+        run: $GITHUB_WORKSPACE/.travis.sh
