@@ -26,6 +26,7 @@ jobs:
       - name: autogen
         run: >-
           autoreconf -fi
+          
           ./configure "$@"
       - name: make
         run: make
