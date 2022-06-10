@@ -34,4 +34,4 @@ jobs:
         uses: actions/upload-artifact@v3.1.0
         with:
           name: binary
-          path: /home/runner/work/psdoom-ng/psdoom-ng/psdoom-ng
+          path: /home/runner/work/psdoom-ng/psdoom-ng/
