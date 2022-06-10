@@ -24,8 +24,8 @@ jobs:
       - name: checkout
       - uses: actions/checkout@v2
       - name: autogen
-      - run: >-
+        run: >-
           autoreconf -fi
-          ./configure
+          ./configure "$@"
       - name: make
-      - run: make
+        run: make
