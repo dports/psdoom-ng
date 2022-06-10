@@ -21,6 +21,11 @@ jobs:
           sudo apt-get update
 
           sudo apt-get install -y libpng-dev libsamplerate0-dev libsdl-mixer1.2-dev libsdl-net1.2-dev libsdl1.2-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-net-dev
+      - name: checkout
       - uses: actions/checkout@v2
+      - name: autogen
       - run: >-
-          ./autogen.sh && make && make install DESTDIR=/tmp/whatever && make dist
+          autoreconf -fi
+          ./configure "$@"
+      - name: make
+      - run: make
